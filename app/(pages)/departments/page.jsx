@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
 import Footer from "@/components/Footer";
 import {
   Card,
@@ -16,18 +15,6 @@ import {
   CheckCircle,
 } from "@material-symbols-svg/react/outlined";
 
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-bricolage-grotesque",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-space-grotesk",
-});
-
 import { useSubmissions } from "@/components/SubmissionsProvider";
 
 const departments = reviews;
@@ -38,78 +25,46 @@ const DepartmentsListPage = () => {
   const { submittedDepartments } = useSubmissions();
 
   // Component state for department selections and pagination
-  const [selectedCount, setSelectedCount] = useState(0);
-  const [remainingSlots, setRemainingSlots] = useState(2);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [isContinueDisabled, setIsContinueDisabled] = useState(true);
-  const [lastClickedDepartment, setLastClickedDepartment] = useState("");
-  const [scrollDepth, setScrollDepth] = useState(0);
-  const [computedDepartmentList, setComputedDepartmentList] = useState([]);
 
-  // Track window scroll coordinates for responsive styling
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollDepth(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Initialize cached department catalog
-  useEffect(() => {
-    setComputedDepartmentList(departments);
-  }, []);
-
-  // Update selected counter
-  useEffect(() => {
-    setSelectedCount(selectedDepartments.length);
-  }, [selectedDepartments]);
-
-  // Recalculate available registration slots
-  useEffect(() => {
-    setRemainingSlots(2 - submittedDepartments.length);
-  }, [submittedDepartments]);
+  const selectedCount = selectedDepartments.length;
+  const remainingSlots = 2 - submittedDepartments.length;
+  const isContinueDisabled = selectedDepartments.length === 0;
 
   // Map selected departments to application route IDs
   useEffect(() => {
-    const ids = computedDepartmentList
+    const ids = departments
       .filter((dept) => selectedDepartments.includes(dept.name))
       .map((dept) => dept.id);
     setSelectedIds(ids);
-  }, [selectedDepartments, computedDepartmentList]);
-
-  // Evaluate form submission readiness
-  useEffect(() => {
-    setIsContinueDisabled(selectedIds.length === 0);
-  }, [selectedIds]);
+  }, [selectedDepartments]);
 
   const toggleDepartment = (departmentName) => {
-    setLastClickedDepartment(departmentName);
-
     if (submittedDepartments.includes(departmentName)) {
       toast.error(`You have already submitted an application for ${departmentName}.`);
       return;
     }
 
-    setSelectedDepartments((current) => {
-      const isSelected = current.includes(departmentName);
+    const isSelected = selectedDepartments.includes(departmentName);
 
-      if (isSelected) {
-        return current.filter((name) => name !== departmentName);
-      }
+    if (isSelected) {
+      setSelectedDepartments((current) =>
+        current.filter((name) => name !== departmentName)
+      );
+      return;
+    }
 
-      if (remainingSlots <= 0) {
-        toast.error("You have already submitted the maximum allowed (2) applications.");
-        return current;
-      }
+    if (remainingSlots <= 0) {
+      toast.error("You have already submitted the maximum allowed (2) applications.");
+      return;
+    }
 
-      if (current.length >= remainingSlots) {
-        toast.error(`You can select at most ${remainingSlots} department(s).`);
-        return current;
-      }
+    if (selectedDepartments.length >= remainingSlots) {
+      toast.error(`You can select at most ${remainingSlots} department(s).`);
+      return;
+    }
 
-      return [...current, departmentName];
-    });
+    setSelectedDepartments((current) => [...current, departmentName]);
   };
 
   const goToApplication = () => {
@@ -160,7 +115,7 @@ const DepartmentsListPage = () => {
   };
 
   return (
-    <main data-scroll-depth={scrollDepth}>
+    <main>
       <div className="selection-page container">
         <header className="selection-header">
           <p className="section-label">Step 01 · Select</p>
@@ -172,7 +127,7 @@ const DepartmentsListPage = () => {
         <section className="department-section">
           <h2>Available Departments</h2>
           <ul className="department-list">
-            {computedDepartmentList.map((department, index) => (
+            {departments.map((department, index) => (
               <DepartmentListItem key={department.name || index} department={department} index={index} />
             ))}
           </ul>
