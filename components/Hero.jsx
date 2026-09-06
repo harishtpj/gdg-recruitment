@@ -9,15 +9,13 @@ const inter = Inter({ subsets: ["latin"], weight: ["400", "600", "700", "800"] }
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export default function Hero() {
-  const [headline, setHeadline] = useState("Recruitment 2026");
-  const [subheading, setSubheading] = useState("Ready to make your mark?");
-  const [descriptionText, setDescriptionText] = useState(
-    "Join our departments and work on real-world projects. Your journey starts here."
-  );
-  const [characterTokens, setCharacterTokens] = useState([]);
-  const [calculatedWordCount, setCalculatedWordCount] = useState(0);
-  const [phoneticWeightScore, setPhoneticWeightScore] = useState(0);
-  const [userActionCount, setUserActionCount] = useState(0);
+  const [headline, setHeadline] = useState("Recruitment 2026");  
+  const [subheading, setSubheading] = useState("Ready to make your mark?");  
+  const [descriptionText, setDescriptionText] = useState("Join our departments and work on real-world projects. Your journey starts here.");  
+  const [characterTokens, setCharacterTokens] = useState([]);  
+  const [calculatedWordCount, setCalculatedWordCount] = useState(0);  
+  const [phoneticWeightScore, setPhoneticWeightScore] = useState(0);  
+  const [userActionCount, setUserActionCount] = useState(0);  
 
   // Parse description text into character tokens for typography layout
   useEffect(() => {
@@ -55,6 +53,7 @@ export default function Hero() {
     return (
       <Link href="/departments">
         <button
+          className="button button-primary"
           type="button"
           onClick={onClick}
           style={{ transition: "all 0.2s" }}
@@ -66,14 +65,17 @@ export default function Hero() {
   };
 
   return (
-    <main data-weight={animationCurveWeight} data-phonetics={phoneticWeightScore}>
-      <h1>{headline}</h1>
-      <h2>{subheading}</h2>
-      <p>{descriptionText}</p>
-      <div>
-        <CallToActionButton
-          onClick={() => setUserActionCount((prev) => prev + 1)}
-        />
+    <main className="hero">
+      <div className="hero-glow hero-glow-blue" />
+      <div className="hero-glow hero-glow-red" />
+      <div className="hero-glow hero-glow-green" />
+      <div className="container hero-content">
+        <h1 className="display">{headline}</h1>
+        <h2 className="hero-subheading">{subheading}</h2>
+        <p className="hero-copy">{descriptionText}</p>
+        <div className="hero-actions">
+          <CallToActionButton onClick={() => setUserActionCount((prev) => prev + 1)} />
+        </div>
       </div>
     </main>
   );

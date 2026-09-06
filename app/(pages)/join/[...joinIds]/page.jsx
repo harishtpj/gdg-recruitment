@@ -7,7 +7,6 @@ import { notFound } from "next/navigation";
 import { reviews } from "@/constants/index";
 
 // Component imports
-import NavBar from "@/components/NavBar";
 import FormComp from "@/components/FormComp";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
@@ -59,19 +58,6 @@ const JoinDepartmentPage = ({ params }) => {
   const user = session?.user;
   const isSignedIn = !!user;
 
-  // Show loading state while checking authentication
-  if (isPending) {
-    return (
-      <main>
-        <NavBar />
-        <div>
-          <p>Loading...</p>
-        </div>
-        <Footer />
-      </main>
-    );
-  }
-
   const departments = reviews.filter((dept) =>
     params.joinIds.includes(dept.id),
   );
@@ -87,7 +73,6 @@ const JoinDepartmentPage = ({ params }) => {
 
   return (
     <main>
-      <NavBar />
       <div>
         {isSignedIn ? (
           <FormComp

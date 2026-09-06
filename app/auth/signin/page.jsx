@@ -45,10 +45,6 @@ export default function SignInPage() {
     }
   }, [session, isPending, router]);
 
-  if (isPending) {
-    return <DWASFWLoader />;
-  }
-
   if (session?.user) {
     return (
       <div className="min-h-screen bg-[#0d0d11] flex items-center justify-center">

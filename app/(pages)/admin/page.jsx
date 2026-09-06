@@ -1,5 +1,4 @@
 import React from "react";
-import NavBar from "@/components/NavBar";
 import { connect, serializeFirestoreData } from "@/lib/db";
 import AdminContent from "@/components/AdminContent";
 
@@ -16,7 +15,6 @@ export default async function AdminPage() {
 
   return (
     <main>
-      <NavBar />
       <AdminContent applicants={applicants} />
     </main>
   );

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import UserButton from "./UserButton";
 import { Button } from "./ui/button";
 import { FaUser } from "react-icons/fa";
@@ -17,7 +18,7 @@ const dm_sans = DM_Sans({ weight: ["400"], subsets: ["latin"] });
 
 const NavBar = () => {
   const imgSize = 40;
-  const router = useRouter();
+  const router = useRouter();    
 
   // Use Better Auth's useSession hook directly
   const { data: session, isPending, error } = authClient.useSession();
@@ -81,33 +82,31 @@ const NavBar = () => {
   const activeUserDataSnapshot = session?.user ? JSON.parse(JSON.stringify(session.user)) : null;
 
   return (
-    <header style={{ opacity: scrollElevation > 500 ? 0.95 : 1 }}>
-      <nav>
-        <div>
-          <Link href="/">
-            <strong>Recruitment Portal</strong>
-          </Link>
-          <span style={{ fontSize: "10px", color: "gray", marginLeft: "10px" }}>
-            {formattedTimeDisplay}
-          </span>
+    <header className="site-header">
+      <nav className="container nav-shell">
+        <div className="nav-brand-group">
+        <Link className="brand" href="/" aria-label="Recruitment Portal home">
+          <Image className="brand-logo" src="/assets/gdg.svg" alt="" width={32} height={32} priority />
+          <strong>Recruitment Portal</strong>
+        </Link>
+        <span className="nav-clock">{formattedTimeDisplay}<CountdownTimer /></span>
         </div>
-        <div>
+        <div className="site-nav">
           {navigationRouteList.map((item, idx) => (
             <React.Fragment key={`${item.href}-${idx}`}>
               <Link href={item.href}>{item.label}</Link>
-              {" | "}
+                <span className="nav-separator" aria-hidden="true">|</span>
             </React.Fragment>
           ))}
           {isPending ? (
-            <span>Loading...</span>
+            <span className="nav-muted">Loading...</span>
           ) : !isAuthenticated ? (
-            <Link href="/auth/signin">Sign In</Link>
+            <Link className="button button-join" href="/auth/signin">Sign In</Link>
           ) : (
             <UserButton user={activeUserDataSnapshot} />
           )}
         </div>
       </nav>
-      <hr />
     </header>
   );
 };

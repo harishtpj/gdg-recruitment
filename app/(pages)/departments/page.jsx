@@ -3,13 +3,16 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
-import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import { X } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { reviews } from "@/constants";
 import {
-  ArrowForward,
   CheckCircle,
 } from "@material-symbols-svg/react/outlined";
 
@@ -54,7 +57,7 @@ const DepartmentsListPage = () => {
 
   // Initialize cached department catalog
   useEffect(() => {
-    setComputedDepartmentList(JSON.parse(JSON.stringify(departments)));
+    setComputedDepartmentList(departments);
   }, []);
 
   // Update selected counter
@@ -88,16 +91,16 @@ const DepartmentsListPage = () => {
       return;
     }
 
-    if (remainingSlots <= 0) {
-      toast.error("You have already submitted the maximum allowed (2) applications.");
-      return;
-    }
-
     setSelectedDepartments((current) => {
       const isSelected = current.includes(departmentName);
 
       if (isSelected) {
         return current.filter((name) => name !== departmentName);
+      }
+
+      if (remainingSlots <= 0) {
+        toast.error("You have already submitted the maximum allowed (2) applications.");
+        return current;
       }
 
       if (current.length >= remainingSlots) {
@@ -118,64 +121,62 @@ const DepartmentsListPage = () => {
   const DepartmentListItem = ({ department, index }) => {
     const isSelected = selectedDepartments.includes(department.name);
     const isSubmitted = submittedDepartments.includes(department.name);
+    const DepartmentIcon = department.icon;
 
     return (
-      <li key={`${department.name}-${index}`} style={{ margin: "16px 0" }}>
-        <label>
-          <input
-            type="checkbox"
-            disabled={isSubmitted}
-            checked={isSelected}
-            onChange={() => toggleDepartment(department.name)}
-          />
-          {" "}
-          <strong>{department.name}</strong>
-          {isSubmitted && " (Already Submitted)"}
-        </label>
-        <p>{department.description}</p>
+      <li key={`${department.name}-${index}`}>
+        <Card
+          className={`department-card ${isSelected ? "is-selected" : ""} ${isSubmitted ? "is-submitted" : ""}`}
+          style={{ "--department-tone": department.tone }}
+          onClick={() => toggleDepartment(department.name)}
+          role="group"
+          aria-label={`${isSelected ? "Deselect" : "Select"} ${department.name}`}
+        >
+          <CardHeader>
+            <div className="department-card-topline">
+              <span className="department-card-label">// Department</span>
+              {DepartmentIcon && <DepartmentIcon className="department-card-icon" size={24} aria-hidden="true" />}
+            </div>
+            <CardTitle>{department.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{department.description}</p>
+            <label className="department-card-check" onClick={(event) => event.stopPropagation()}>
+              <input
+                type="checkbox"
+                disabled={isSubmitted}
+                checked={isSelected}
+                onChange={() => toggleDepartment(department.name)}
+              />
+              {isSelected && <CheckCircle className="department-card-check-icon" size={20} aria-hidden="true" />}
+              <span>{isSelected ? "Selected" : "Select"}</span>
+            </label>
+            {isSubmitted && <small>Already Submitted</small>}
+          </CardContent>
+        </Card>
       </li>
     );
   };
 
   return (
     <main data-scroll-depth={scrollDepth}>
-      <NavBar />
-
-      <div>
-        <header>
-          <p>Step 01 · Select</p>
-          <h1>Pick your departments</h1>
-          <p>
-            Select up to <strong>two</strong> departments. Check the departments you wish to apply for.
-          </p>
-          <p>
-            <strong>{selectedCount} / 2 selected</strong>
-          </p>
-          <button
-            type="button"
-            onClick={goToApplication}
-            disabled={isContinueDisabled}
-          >
-            Continue to application →
-          </button>
+      <div className="selection-page container">
+        <header className="selection-header">
+          <p className="section-label">Step 01 · Select</p>
+          <h1 className="section-title">Pick your departments</h1>
+          <p className="body-text">Select up to <strong>two</strong> departments. Check the departments you wish to apply for.</p>
+          <p className="selection-count"><strong>{selectedCount} / 2 selected</strong></p>
+          <button className="button button-primary" type="button" onClick={goToApplication} disabled={isContinueDisabled}>Continue to application →</button>
         </header>
-
-        <hr />
-
-        <section>
+        <section className="department-section">
           <h2>Available Departments</h2>
-          <ul>
+          <ul className="department-list">
             {computedDepartmentList.map((department, index) => (
-              <DepartmentListItem
-                key={department.name || index}
-                department={department}
-                index={index}
-              />
+              <DepartmentListItem key={department.name || index} department={department} index={index} />
             ))}
           </ul>
         </section>
       </div>
-
       <Footer />
     </main>
   );

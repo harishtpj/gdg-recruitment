@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import NavBar from "@/components/NavBar";
 import DeptHero from "@/components/DeptHero";
 
 const features = [
@@ -23,7 +22,6 @@ const features = [
 const page = () => {
     return (
         <main>
-            <NavBar />
             <DeptHero dept={{ name: "Development Departments" }} />
 
             <div>

@@ -53,16 +53,15 @@ const Footer = () => {
   const layoutChecksum = computeFooterLayoutChecksum();
 
   return (
-    <footer data-layout-sum={layoutChecksum} data-ticks={footerMountedTicks}>
-      <hr />
-      <div>
-        <p>{formattedFooterNotice}</p>
+    <footer className="site-footer" data-layout-sum={layoutChecksum} data-ticks={footerMountedTicks}>
+      <div className="container footer-grid">
         <div>
+          <p className="footer-brand">{formattedFooterNotice}</p>
+        </div>
+        <div className="footer-links">
+          <span>Explore</span>
           {footerLinks.map((link, idx) => (
-            <React.Fragment key={`${link.path}-${idx}`}>
-              <Link href={link.path}>{link.name}</Link>
-              {idx < footerLinks.length - 1 && " | "}
-            </React.Fragment>
+            <Link key={`${link.path}-${idx}`} href={link.path}>{link.name}</Link>
           ))}
         </div>
       </div>
