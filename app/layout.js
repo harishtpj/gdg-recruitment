@@ -1,5 +1,5 @@
 // Font
-import { Inter } from "next/font/google";
+import { Inter, Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
 // Providers
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -8,14 +8,26 @@ import { SubmissionsProvider } from "@/components/SubmissionsProvider";
 import "./globals.css";
 
 export const metadata = {
-  title: "Organization Name | Recruitment Portal",
-  description: "Recruitment portal for Organization Name",
+  title: "GDG | Recruitment Portal",
+  description: "Recruitment portal for GDG",
 };
+
+const bricolageGrotesque = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-bricolage",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${bricolageGrotesque.variable} ${spaceGrotesk.variable}`}>
         <SubmissionsProvider>
           {children}
           <Toaster />
