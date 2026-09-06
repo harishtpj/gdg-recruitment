@@ -153,6 +153,7 @@ const DepartmentsListPage = () => {
             </label>
             {isSubmitted && <small>Already Submitted</small>}
           </CardContent>
+          {DepartmentIcon && <DepartmentIcon className="department-card-watermark" aria-hidden="true" />}
         </Card>
       </li>
     );

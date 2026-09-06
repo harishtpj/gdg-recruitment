@@ -19,7 +19,7 @@ export async function POST(req) {
     const user = session.user;
     const userEmail = user.email;
 
-    const deadline = new Date("2026-08-23T23:59:59+05:30");
+    const deadline = new Date(process.env.NEXT_PUBLIC_RECRUITMENT_DEADLINE);
     if (new Date() > deadline)
       return new Response(
         JSON.stringify({

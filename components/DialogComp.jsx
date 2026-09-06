@@ -58,14 +58,14 @@ export default function DialogComp({ selectedApplicants }) {
             <DialogTrigger asChild>
                 <Button variant="outline">View Responses</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[95vw] sm:max-w-[80vw] md:max-w-[70vw] lg:max-w-[60vw] h-fit">
+            <DialogContent className="response-dialog">
                 <DialogHeader>
                     <DialogTitle>Applicant&apos;s Responses</DialogTitle>
                     <DialogDescription>
                         Questions and answers answered by the applicants can be viewed here.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="">
+                <div className="response-dialog-body">
                     {selectedApplicants().length !== 0 ? (
                         <CarouselComp    
                             dataList={selectedApplicants()} 
@@ -73,7 +73,7 @@ export default function DialogComp({ selectedApplicants }) {
                             shortlistStatus={shortlistStatus}
                         />
                     ) : (
-                        <p className="flex gap-3 items-center justify-start font-light text-md text-red-500">
+                        <p className="response-empty-state">
                             <CiWarning /> No applicant selected
                         </p>
                     )}

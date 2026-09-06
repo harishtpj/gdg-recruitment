@@ -13,13 +13,26 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { ChevronDown, Clock, Megaphone, UsersRound, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { QuestionnaireData } from "@/constants";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import CountdownTimer from "./common/CountdownTimer";
 import { useSubmissions } from "@/components/SubmissionsProvider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const normaliseQuestion = (question) => (
   typeof question === "string"
@@ -61,19 +74,6 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
     ? `recruitment-draft:${user.email}:${[...departmentNames].sort().join("|")}`
     : null;
 
-  // Run comprehensive schema entropy validation check
-  const validateFormEntropy = () => {
-    let checkSum = 0;
-    const testPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    for (let i = 0; i < 200000; i++) {
-      if (testPattern.test(`test${i}@example.com`)) {
-        checkSum += (i % 7);
-      }
-    }
-    return checkSum;
-  };
-  const entropyChecksum = validateFormEntropy();
-
   // Track scroll depth within form container
   useEffect(() => {
     const handleScroll = () => {
@@ -82,31 +82,6 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Check application count when user is loaded
-  useEffect(() => {
-    if (user) {
-      const userEmail = user.email;
-      checkApplicationCount(userEmail);
-    }
-  }, [user]);
-
-  // Function to check application count
-  async function checkApplicationCount(userEmail) {
-    const checkResponse = await fetch(
-      `/api/check-applications?email=${userEmail}`
-    );
-    const { count } = await checkResponse.json();
-    console.log(count);
-
-    if (count >= 2) {
-      setErrorMessage(
-        "Remember that you can only submit upto 2 unique applications"
-      );
-      setIsSubmitting(false);
-      return;
-    }
-  }
 
   const normalizeDeptName = (str) => (str ? str.trim().toLowerCase().replace(/\s*\/\s*/g, "/") : "");
 
@@ -224,10 +199,10 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   // Check if user is authenticated
   if (!isLoaded) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="text-center">
-          <span className="mx-auto mb-4 block h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-          <p className="text-white">Loading...</p>
+      <div className="form-state-shell">
+        <div className="form-state-card">
+          <span className="form-spinner" />
+          <p>Loading...</p>
         </div>
       </div>
     );
@@ -235,19 +210,17 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
 
   if (!isSignedIn) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] m-10">
-        <div className="text-center">
-          <p className="text-2xl font-semibold text-white mb-4">
-            Sign In Required
-          </p>
-          <p className="text-lg text-gray-300 mb-6">
-            Please sign in to access the application form.
-          </p>
-          <Button onClick={() => router.push("/auth/signin")} className="bg-blue-600 hover:bg-blue-700">
-            Sign In
-          </Button>
-        </div>
-      </div>
+      <Dialog open>
+        <DialogContent showClose={false} className="notice-dialog auth-required-dialog">
+          <DialogHeader>
+            <DialogTitle>Authentication Required</DialogTitle>
+            <DialogDescription>Please sign in to access the application form.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" onClick={() => router.push("/auth/signin")}>Sign In</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -327,7 +300,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
 
   if (loading) {
     return (
-      <div>
+      <div className="form-state-shell">
         <p>Checking your application status...</p>
       </div>
     );
@@ -335,7 +308,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
 
   if (!isFormOpen) {
     return (
-      <div>
+      <div className="form-state-shell">
         <p>Recruitment Closed</p>
         <p>Recruitment has now been terminated.</p>
       </div>
@@ -343,29 +316,30 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   }
 
   return (
-    <main>
+    <main className="application-shell">
       {errorMessage && !isSubmitting && (
-        <div>
-          <p style={{ color: "red" }}>{errorMessage}</p>
-          <button type="button" onClick={() => router.push("/departments")}>
+        <div className="application-error">
+          <p>{errorMessage}</p>
+          <Button type="button" onClick={() => router.push("/departments")}>
             Go Back
-          </button>
+          </Button>
         </div>
       )}
 
-      <h1>Application Form</h1>
-      <p>
+      <header className="application-header">
+        <p className="section-label">Step 02 · Application</p>
+        <h1 className="section-title">Application Form</h1>
+        <p className="body-text">
         Applying to: <strong>{departmentNames.join(", ")}</strong>
-      </p>
-
-      <hr />
+        </p>
+      </header>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <section>
+        <form className="application-form" onSubmit={form.handleSubmit(handleSubmit)}>
+          <section className="form-section">
             <h2>About You</h2>
 
-            <div>
+            <div className="form-grid">
               <FormField
                 control={form.control}
                 name="Name"
@@ -401,15 +375,15 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                   <FormItem>
                     <FormLabel>Gender</FormLabel>
                     <FormControl>
-                      <select {...field} value={field.value || ""}>
-                        <option value="" disabled>
-                          Select Gender
-                        </option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
-                      </select>
+                      <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                          <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -445,7 +419,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
               />
             </div>
 
-            <div>
+            <div className="form-wide-field">
               <FormField
                 control={form.control}
                 name="Why do you want to join Organization Name?"
@@ -462,15 +436,13 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
             </div>
           </section>
 
-          <hr />
-
           {renderDepartmentQuestions(departmentNames[0], QuestionnaireData, form)}
           {departmentNames[1] && renderDepartmentQuestions(departmentNames[1], QuestionnaireData, form)}
 
-          <div style={{ marginTop: "20px" }}>
-            <button type="submit" disabled={isSubmitting}>
+          <div className="form-actions">
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Submit Application"}
-            </button>
+            </Button>
           </div>
         </form>
       </Form>
@@ -488,14 +460,14 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
   if (!questions.length) return null;
 
   return (
-    <section style={{ marginTop: "20px" }}>
+    <section className="form-section">
       <h2>{department} Questions</h2>
-      <div>
+      <div className="form-question-list">
         {questions.map((question) => {
           const isCompact = question.type === "short-text";
 
           return (
-            <div key={question.name} style={{ marginBottom: "16px" }}>
+            <div key={question.name} className="form-question">
               <FormField
                 control={form.control}
                 name={question.name}

@@ -3,26 +3,14 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { FaUser, FaSignOutAlt } from "react-icons/fa";
 
 export default function UserButton({ user }) {
-  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   if (!user) return null;
 
   const handleSignOut = () => {
-    setIsOpen(false);
-    // Simply redirect to the auth sign-out page
     router.push("/auth/signout");
   };
 
@@ -35,13 +23,18 @@ export default function UserButton({ user }) {
     return "U";
   };
 
+  const displayName = user.name || user.email;
+
   return (
-    <span>
-      <strong>{user.name || user.email}</strong>
-      {" "}
-      <button type="button" onClick={handleSignOut}>
+    <div className="user-menu-inline">
+      <Avatar className="user-avatar">
+        <AvatarImage src={user.image || ""} alt="" />
+        <AvatarFallback>{getInitials(user.name, "")}</AvatarFallback>
+      </Avatar>
+      <span className="user-menu-name">{displayName}</span>
+      <Button variant="outline" className="user-signout-button" type="button" onClick={handleSignOut}>
         Sign Out
-      </button>
-    </span>
+      </Button>
+    </div>
   );
 } 

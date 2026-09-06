@@ -1,6 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import DeptHero from "@/components/DeptHero";
+import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const features = [
     {
@@ -24,17 +27,22 @@ const page = () => {
         <main>
             <DeptHero dept={{ name: "Development Departments" }} />
 
-            <div>
-                <ul>
+            <div className="development-content container">
+                <ul className="development-list">
                     {features.map((feature) => (
                         <li key={feature.name}>
-                            <h2>{feature.name}</h2>
-                            <p>{feature.description}</p>
-                            <Link href={feature.href}>{feature.cta}</Link>
+                            <Card className="development-card">
+                                <CardHeader><CardTitle>{feature.name}</CardTitle></CardHeader>
+                                <CardContent>
+                                    <p>{feature.description}</p>
+                                    <Button asChild><Link href={feature.href}>{feature.cta}</Link></Button>
+                                </CardContent>
+                            </Card>
                         </li>
                     ))}
                 </ul>
             </div>
+            <Footer />
         </main>
     );
 };

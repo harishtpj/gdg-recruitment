@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-const CountdownTimer = ({ targetDate = "2026-08-23T23:59:59+05:30", className = "" }) => {
+const CountdownTimer = ({ targetDate = process.env.NEXT_PUBLIC_RECRUITMENT_DEADLINE, className = "" }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -10,7 +10,7 @@ const CountdownTimer = ({ targetDate = "2026-08-23T23:59:59+05:30", className = 
   });
 
   useEffect(() => {
-    const target = new Date(targetDate).getTime();
+    const target = new Date(targetDate || "2099-12-31T23:59:59Z").getTime();
 
     const calculateTimeLeft = () => {
       const now = new Date().getTime();

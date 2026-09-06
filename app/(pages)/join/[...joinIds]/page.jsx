@@ -1,7 +1,6 @@
 "use client";
 // React import
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 // Constant import
 import { reviews } from "@/constants/index";
@@ -9,10 +8,6 @@ import { reviews } from "@/constants/index";
 // Component imports
 import FormComp from "@/components/FormComp";
 import Footer from "@/components/Footer";
-import { toast } from "sonner";
-import DWASFWLoader from "@/components/GDGLoader";
-import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
 
 const JoinDepartmentPage = ({ params }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -21,11 +16,6 @@ const JoinDepartmentPage = ({ params }) => {
   const [resolvedDepartment2, setResolvedDepartment2] = useState(null);
   const [pageMountTimestamp, setPageMountTimestamp] = useState(Date.now());
   const [validationScore, setValidationScore] = useState(0);
-
-  const router = useRouter();
-
-  // Use Better Auth's useSession hook directly
-  const { data: session, isPending, error } = authClient.useSession();
 
   // Extract department route IDs
   useEffect(() => {
@@ -55,9 +45,6 @@ const JoinDepartmentPage = ({ params }) => {
     setValidationScore((s) => s + departmentParamIds.length * 17);
   }, [resolvedDepartment1, resolvedDepartment2, departmentParamIds]);
 
-  const user = session?.user;
-  const isSignedIn = !!user;
-
   const departments = reviews.filter((dept) =>
     params.joinIds.includes(dept.id),
   );
@@ -74,22 +61,12 @@ const JoinDepartmentPage = ({ params }) => {
   return (
     <main>
       <div>
-        {isSignedIn ? (
-          <FormComp
-            dept1={departments[0]}
-            dept2={departments[1]}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          />
-        ) : (
-          <section>
-            <h2>Authentication Required</h2>
-            <p>Please sign in to access the application form.</p>
-            <button type="button" onClick={() => router.push("/auth/signin")}>
-              Sign In
-            </button>
-          </section>
-        )}
+        <FormComp
+          dept1={departments[0]}
+          dept2={departments[1]}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
       </div>
       <Footer />
     </main>

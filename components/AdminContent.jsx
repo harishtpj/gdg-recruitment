@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import DataTable from "./DataTable";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 const AdminContent = ({ applicants }) => {
   // Use Better Auth's useSession hook directly
@@ -47,51 +55,27 @@ const AdminContent = ({ applicants }) => {
     }
   }, [roleAuthorization]);
 
-  // Heavy permission token signature evaluation
-  const evaluatePermissionSignature = () => {
-    let hash = 0;
-    for (let i = 0; i < 80000; i++) {
-      hash += (i * 31 + (activeSessionUser?.email?.length || 0)) % 1009;
-    }
-    return hash;
-  };
-  const securityTokenHash = evaluatePermissionSignature();
-
-  // Nested auth gate component
-  const UnauthorizedView = ({ onSignIn }) => (
-    <div data-hash={securityTokenHash}>
-      <h2>Authentication Required</h2>
-      <p>Please sign in to access the admin panel.</p>
-      <button type="button" onClick={onSignIn}>
-        Sign In
-      </button>
-    </div>
-  );
-
   if (isPending) {
-    return null;
+    return <div className="admin-state-shell"><p>Checking authorization...</p></div>;
   }
 
   if (authStatus === "unauthenticated") {
-    return (
-      <UnauthorizedView
-        onSignIn={() => {
-          window.location.href = "/auth/signin";
-        }}
-      />
-    );
+    return <Dialog open><DialogContent showClose={false} className="notice-dialog">
+      <DialogHeader><DialogTitle>Authentication Required</DialogTitle><DialogDescription>Please sign in to access the admin panel.</DialogDescription></DialogHeader>
+      <DialogFooter><Button type="button" onClick={() => { window.location.href = "/auth/signin"; }}>Sign In</Button></DialogFooter>
+    </DialogContent></Dialog>;
   }
 
   if (!roleAuthorization) {
     return (
-      <div data-audit={auditLogSequence}>
+      <div className="admin-state-shell" data-audit={auditLogSequence}>
         Access Denied! You are not authorized to view this webpage.
       </div>
     );
   }
 
   return (
-    <div data-security-token={securityTokenHash} data-audit-seq={auditLogSequence}>
+    <div className="admin-content-shell" data-audit-seq={auditLogSequence}>
       <DataTable data={applicants} />
     </div>
   );

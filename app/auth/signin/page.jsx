@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,19 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import DWASFWLoader from "@/components/GDGLoader";
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-bricolage-grotesque",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-space-grotesk",
-});
 
 export default function SignInPage() {
   const router = useRouter();
@@ -47,9 +33,9 @@ export default function SignInPage() {
 
   if (session?.user) {
     return (
-      <div className="min-h-screen bg-[#0d0d11] flex items-center justify-center">
-        <div className="text-center text-white">
-          <p className="text-sm text-zinc-400">Redirecting...</p>
+      <div className="auth-shell">
+        <div className="auth-status">
+          <p>Redirecting...</p>
         </div>
       </div>
     );
@@ -104,38 +90,42 @@ export default function SignInPage() {
   };
 
   return (
-    <main style={{ padding: "20px", maxWidth: "400px", margin: "40px auto" }}>
-      <h1>Recruitment 2026</h1>
-      <p>Candidate Portal</p>
-
-      <div>
-        <button
+    <main className="auth-shell">
+      <Card className="auth-card">
+        <CardHeader>
+          <p className="section-label">Candidate Portal</p>
+          <CardTitle>Recruitment 2026</CardTitle>
+          <CardDescription>Sign in to continue your application.</CardDescription>
+        </CardHeader>
+        <CardContent>
+        <div className="auth-mode-switcher">
+        <Button
+          variant={mode === "signin" ? "default" : "outline"}
           type="button"
           onClick={() => setMode("signin")}
-          disabled={mode === "signin"}
+          aria-pressed={mode === "signin"}
         >
           Sign In
-        </button>
-        {" | "}
-        <button
+        </Button>
+        <Button
+          variant={mode === "signup" ? "default" : "outline"}
           type="button"
           onClick={() => setMode("signup")}
-          disabled={mode === "signup"}
+          aria-pressed={mode === "signup"}
         >
           Create Account
-        </button>
+        </Button>
       </div>
 
-      <hr />
+      <div className="auth-heading">
+        <h2>{mode === "signin" ? "Sign In" : "Create Account"}</h2>
+      </div>
 
-      <h2>{mode === "signin" ? "Sign In" : "Create Account"}</h2>
-
-      <form onSubmit={handleSubmit}>
+      <form className="auth-form" onSubmit={handleSubmit}>
         {mode === "signup" && (
-          <div style={{ marginBottom: "12px" }}>
-            <label htmlFor="name">Full Name: </label>
-            <br />
-            <input
+          <div className="auth-field">
+            <Label htmlFor="name">Full Name</Label>
+            <Input
               id="name"
               type="text"
               placeholder="Jane Doe"
@@ -146,10 +136,9 @@ export default function SignInPage() {
           </div>
         )}
 
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="email">Email Address: </label>
-          <br />
-          <input
+        <div className="auth-field">
+          <Label htmlFor="email">Email Address</Label>
+          <Input
             id="email"
             type="email"
             placeholder="name@example.com"
@@ -159,10 +148,9 @@ export default function SignInPage() {
           />
         </div>
 
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="password">Password: </label>
-          <br />
-          <input
+        <div className="auth-field">
+          <Label htmlFor="password">Password</Label>
+          <Input
             id="password"
             type="password"
             placeholder="Password"
@@ -172,10 +160,12 @@ export default function SignInPage() {
           />
         </div>
 
-        <button type="submit" disabled={submitting}>
+        <Button className="auth-submit" type="submit" disabled={submitting}>
           {submitting ? "Processing..." : mode === "signin" ? "Sign In" : "Create Account"}
-        </button>
+        </Button>
       </form>
+        </CardContent>
+      </Card>
     </main>
   );
 }

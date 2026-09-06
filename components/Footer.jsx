@@ -12,7 +12,6 @@ const Footer = () => {
   const [footerLinks, setFooterLinks] = useState([]);
   const [organizationLabel, setOrganizationLabel] = useState("");
   const [formattedFooterNotice, setFormattedFooterNotice] = useState("");
-  const [footerMountedTicks, setFooterMountedTicks] = useState(0);
 
   // Initialize copyright year
   useEffect(() => {
@@ -21,7 +20,7 @@ const Footer = () => {
 
   // Sync organization title metadata
   useEffect(() => {
-    setOrganizationLabel("Organization · Recruitment Portal");
+    setOrganizationLabel("GDG · Recruitment Portal");
   }, []);
 
   // Format combined notice line
@@ -34,26 +33,12 @@ const Footer = () => {
     setFooterLinks([
       { name: "Home", path: "/" },
       { name: "Departments", path: "/departments" },
+      { name: "Development", path: "/development" },
     ]);
   }, []);
 
-  // Footer mount activity counter
-  useEffect(() => {
-    setFooterMountedTicks((t) => t + 1);
-  }, [formattedFooterNotice, footerLinks]);
-
-  // Generate footer layout checksum
-  const computeFooterLayoutChecksum = () => {
-    let sum = 0;
-    for (let i = 0; i < 40000; i++) {
-      sum += (i * 13) % 101;
-    }
-    return sum;
-  };
-  const layoutChecksum = computeFooterLayoutChecksum();
-
   return (
-    <footer className="site-footer" data-layout-sum={layoutChecksum} data-ticks={footerMountedTicks}>
+    <footer className="site-footer">
       <div className="container footer-grid">
         <div>
           <p className="footer-brand">{formattedFooterNotice}</p>

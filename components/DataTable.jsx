@@ -181,18 +181,18 @@ const DataTable = ({ data }) => {
         Header: "Shortlisted",
         accessor: "shortlisted",
         Cell: ({ row }) => (
-          <button
+          <Button
             onClick={() =>
               handleShortlist(row.original._id, row.original.shortlisted)
             }
-            className={`px-4 py-2 rounded w-[115px] ${
+            className={`table-action-button ${
               row.original.shortlisted
                 ? "bg-red-600 text-white"
                 : "bg-green-600 text-white"
             }`}
           >
             {row.original.shortlisted ? "Unshortlist" : "Shortlist"}
-          </button>
+          </Button>
         ),
       },
     ],

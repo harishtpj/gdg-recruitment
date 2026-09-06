@@ -28,10 +28,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${bricolageGrotesque.variable} ${spaceGrotesk.variable}`}>
-        <SubmissionsProvider>
-          {children}
-          <Toaster />
-        </SubmissionsProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <SubmissionsProvider>
+            {children}
+            <Toaster />
+          </SubmissionsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

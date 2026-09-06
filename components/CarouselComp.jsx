@@ -32,23 +32,23 @@ export default function CarouselComp({
     };
 
     return (
-        <Carousel className="max-w-full">
+        <Carousel className="response-carousel">
             <CarouselContent>
                 {dataList.map((data, index) => {
                     const questions = getQuestions(data);
 
                     return (
                         <CarouselItem key={data._id || data.id || index}>
-                            <div className="p-1">
-                                <Card className="h-[55vh] max-h-[55vh] border-none shadow-none overflow-hidden">
-                                    <CardContent className="flex h-full flex-col p-3 overflow-hidden">
-                                        <div className="flex flex-col items-center justify-center mb-3 gap-1 font-medium shrink-0">
-                                            <span>{data.Name || "Unnamed Applicant"}</span>
-                                            <span className="font-light text-sm opacity-[50%]">
+                            <div className="response-slide">
+                                <Card className="response-card">
+                                    <CardContent className="response-card-content">
+                                        <div className="response-applicant">
+                                            <span className="response-applicant-name">{data.Name || "Unnamed Applicant"}</span>
+                                            <span className="response-applicant-department">
                                                 {data.Department || "No Department"}
                                             </span>
                                         </div>
-                                        <div className="w-full flex-1 flex flex-col gap-5 overflow-y-auto pr-1">
+                                        <div className="response-answer-list">
                                             {questions.length > 0 ? (
                                                 questions.map(([question, answer], qIndex) => {
                                                     const displayAnswer =
@@ -59,27 +59,28 @@ export default function CarouselComp({
                                                     return (
                                                         <div
                                                             key={`${question}-${qIndex}`}
-                                                            className="border p-3 border-sm rounded-md"
+                                                            className="response-answer"
                                                         >
-                                                            <h1 className="mb-1 font-light">
+                                                            <h3>
                                                                 {qIndex + 1}. {question}{" "}
-                                                            </h1>
+                                                            </h3>
                                                             <Separator />
-                                                            <p className="mt-1 font-normal opacity-[70%]">
+                                                            <p>
                                                                 {displayAnswer}
                                                             </p>
                                                         </div>
                                                     );
                                                 })
                                             ) : (
-                                                <p className="text-sm text-gray-400">
+                                                <p className="response-no-answer">
                                                     No responses available for this applicant.
                                                 </p>
                                             )}
                                         </div>
                                         <Button
+                                            variant="outline"
                                             onClick={() => handleShortlist(index)}
-                                            className={`text-white rounded-md mt-4 shrink-0 ${
+                                            className={`response-shortlist-button ${
                                                 shortlistStatus[index]
                                                     ? "bg-red-600 hover:bg-red-700"
                                                     : "bg-green-600 hover:bg-green-700"
