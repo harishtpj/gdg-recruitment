@@ -606,6 +606,14 @@ export const CSV_Header = [
     key: "Phone",
   },
   {
+    label: "Gender",
+    key: "Gender",
+  },
+  {
+    label: "Why do you want to join the department?",
+    key: "Why do you want to join the department?",
+  },
+  {
     label: "Department",
     key: "Department",
   },

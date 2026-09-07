@@ -47,6 +47,10 @@ export default function CarouselComp({
                                             <span className="response-applicant-department">
                                                 {data.Department || "No Department"}
                                             </span>
+                                            <div className="response-applicant-details">
+                                                <span>Gender: {data.Gender || "Not provided"}</span>
+                                                <span>Why they want to join: {data["Why do you want to join the department?"] || "Not provided"}</span>
+                                            </div>
                                         </div>
                                         <div className="response-answer-list">
                                             {questions.length > 0 ? (

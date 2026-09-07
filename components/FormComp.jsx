@@ -43,7 +43,7 @@ const normaliseQuestion = (question) => (
 const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   // Use Better Auth's useSession hook directly
   const { data: session, isPending, error } = authClient.useSession();
-  
+
   const user = session?.user;
   const isSignedIn = !!user;
   const isLoaded = !isPending;
@@ -104,11 +104,15 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
         "Registration number must be 2 numbers, 3 uppercase letters, and 4 numbers (e.g. 25BCE5612)"
       ),
     Email: z.string(),
+    Gender: z.string().min(1, "Gender is required"),
     Phone: z
       .string()
       .min(1, "Phone is required")
       .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     "Year of Study": z.string().optional(),
+    "Why do you want to join the department?": z
+      .string()
+      .min(1, "Please tell us why you want to join the department"),
   };
 
   questionData.forEach((qd) => {
@@ -122,7 +126,9 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
       Name: "",
       RegistrationNumber: "",
       Email: "",
+      Gender: "",
       Phone: "",
+      "Why do you want to join the department?": "",
     },
   });
 
@@ -151,7 +157,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
         if (cached) {
           try {
             remoteSubmitted = JSON.parse(cached);
-          } catch {}
+          } catch { }
         } else {
           try {
             const response = await fetch(`/api/check-applications?email=${encodeURIComponent(email)}`);
@@ -244,8 +250,10 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
       Name: values.Name,
       RegistrationNumber: values.RegistrationNumber,
       Email: values.Email,
+      Gender: values.Gender,
       Phone: values.Phone,
       "Year of Study": values["Year of Study"],
+      "Why do you want to join the department?": values["Why do you want to join the department?"],
     };
 
     const submitDepartment = async (department) => {
@@ -330,7 +338,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
         <p className="section-label">Step 02 · Application</p>
         <h1 className="section-title">Application Form</h1>
         <p className="body-text">
-        Applying to: <strong>{departmentNames.join(", ")}</strong>
+          Applying to: <strong>{departmentNames.join(", ")}</strong>
         </p>
       </header>
 
@@ -422,10 +430,10 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
             <div className="form-wide-field">
               <FormField
                 control={form.control}
-                name="Why do you want to join Organization Name?"
+                name="Why do you want to join the department?"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Why do you want to join Organization Name?</FormLabel>
+                    <FormLabel>Why do you want to join the department?</FormLabel>
                     <FormControl>
                       <Textarea {...field} rows={4} placeholder="2-3 Sentences" />
                     </FormControl>
@@ -455,7 +463,7 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
     QuestionnaireData.find(qd => qd.department === department)?.questions ?? []
   )
     .map(normaliseQuestion)
-    .filter((question) => question.name !== "Why do you want to join Organization Name?" && question.name !== "Why do you want to join DWASFW?");
+    .filter((question) => question.name !== "Why do you want to join the department?" && question.name !== "Why do you want to join Organization Name?" && question.name !== "Why do you want to join DWASFW?");
 
   if (!questions.length) return null;
 

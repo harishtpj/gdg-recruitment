@@ -446,6 +446,7 @@ h6 {
 .response-applicant { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
 .response-applicant-name { color: var(--foreground); font-family: var(--font-bricolage), sans-serif; font-size: 1.35rem; font-weight: 800; }
 .response-applicant-department { color: var(--blue); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.response-applicant-details { display: grid; gap: 6px; margin-top: 10px; color: var(--muted); font-size: 0.82rem; line-height: 1.45; }
 .response-answer-list { display: flex; min-height: 0; flex: 1; flex-direction: column; gap: 12px; overflow-y: auto; padding: 18px 4px 8px 0; }
 .response-answer { padding: 14px 16px; border: 1px solid var(--border); border-left: 3px solid var(--blue); border-radius: 10px; background: rgba(0, 0, 0, 0.16); }
 .response-answer h3 { margin: 0 0 9px; color: var(--foreground); font-family: var(--font-space-grotesk), sans-serif; font-size: 0.86rem; font-weight: 600; line-height: 1.45; letter-spacing: 0; }

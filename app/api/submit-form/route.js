@@ -32,7 +32,20 @@ export async function POST(req) {
     const db = await connect();
     const data = await req.json();
 
-    const { Department, Questions, ...formFields } = data;
+    const {
+      Department,
+      Questions,
+      Gender,
+      "Why do you want to join the department?": motivation,
+      ...formFields
+    } = data;
+
+    if (!Gender || !motivation) {
+      return new Response(
+        JSON.stringify({ message: "Gender and department motivation are required" }),
+        { status: 400 }
+      );
+    }
 
     const regNoRegex = /^\d{2}[A-Z]{3}\d{4}$/;
     if (formFields.RegistrationNumber && !regNoRegex.test(formFields.RegistrationNumber)) {
@@ -72,6 +85,8 @@ export async function POST(req) {
 
     await collection.add({
       ...formFields,
+      Gender,
+      "Why do you want to join the department?": motivation,
       Department,
       Questions,
       Email: userEmail,

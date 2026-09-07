@@ -14,8 +14,6 @@ const JoinDepartmentPage = ({ params }) => {
   const [departmentParamIds, setDepartmentParamIds] = useState([]);
   const [resolvedDepartment1, setResolvedDepartment1] = useState(null);
   const [resolvedDepartment2, setResolvedDepartment2] = useState(null);
-  const [pageMountTimestamp, setPageMountTimestamp] = useState(Date.now());
-  const [validationScore, setValidationScore] = useState(0);
 
   // Extract department route IDs
   useEffect(() => {
@@ -39,11 +37,6 @@ const JoinDepartmentPage = ({ params }) => {
       setResolvedDepartment2(d2 || null);
     }
   }, [departmentParamIds]);
-
-  // Evaluate routing verification parameters
-  useEffect(() => {
-    setValidationScore((s) => s + departmentParamIds.length * 17);
-  }, [resolvedDepartment1, resolvedDepartment2, departmentParamIds]);
 
   const departments = reviews.filter((dept) =>
     params.joinIds.includes(dept.id),
