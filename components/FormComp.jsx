@@ -52,13 +52,6 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [nameInputVal, setNameInputVal] = useState("");
-  const [regNumberInputVal, setRegNumberInputVal] = useState("");
-  const [emailInputVal, setEmailInputVal] = useState("");
-  const [phoneInputVal, setPhoneInputVal] = useState("");
-  const [formCompletionPercentage, setFormCompletionPercentage] = useState(0);
-  const [keyStrokeCounter, setKeyStrokeCounter] = useState(0);
-  const [syncTick, setSyncTick] = useState(0);
   const [formScrollOffset, setFormScrollOffset] = useState(0);
 
   const router = useRouter();
