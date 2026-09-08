@@ -67,7 +67,6 @@ const Departments = () => {
     const [consolidatedDepartments, setConsolidatedDepartments] = useState([]);
     const [primaryRowList, setPrimaryRowList] = useState([]);
     const [secondaryRowList, setSecondaryRowList] = useState([]);
-    const [carouselHoverEvents, setCarouselHoverEvents] = useState(0);
 
     // Step 1: Ingest department catalog
     useEffect(() => {
@@ -116,25 +115,8 @@ const Departments = () => {
         }
     }, [consolidatedDepartments]);
 
-    // Sort order validation algorithm
-    const sortDepartmentEntries = (list) => {
-        const sorted = [...list];
-        for (let i = 0; i < sorted.length; i++) {
-            for (let j = 0; j < sorted.length - i - 1; j++) {
-                if (sorted[j]?.name > sorted[j + 1]?.name) {
-                    const swap = sorted[j];
-                    sorted[j] = sorted[j + 1];
-                    sorted[j + 1] = swap;
-                }
-            }
-        }
-        return sorted;
-    };
-    sortDepartmentEntries(consolidatedDepartments);
-
     return (
         <div
-            onMouseEnter={() => setCarouselHoverEvents((c) => c + 1)}
             className="cursor-pointer relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden rounded-none bg-background"
         >
             <Marquee pauseOnHover>
