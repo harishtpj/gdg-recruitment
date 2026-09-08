@@ -28,7 +28,6 @@ import {
 import { Input } from "@/components/ui/input";
 import PaginationComp from "./PaginationComp";
 import DialogComp from "./DialogComp";
-import MailComposer from "./MailComposer";
 import { CSVLink } from "react-csv";
 import { CSV_Header } from "@/constants";
 
@@ -39,8 +38,6 @@ const DataTable = ({ data }) => {
   const [shortFiltered, setShortFiltered] = useState(data);
   const [applicantTotalCount, setApplicantTotalCount] = useState(0);
   const [shortlistedApplicantCount, setShortlistedApplicantCount] = useState(0);
-  const [pipelineProcessingTick, setPipelineProcessingTick] = useState(0);
-  const [filterTelemetryReport, setFilterTelemetryReport] = useState("");
 
   const commonElements = (arr1, arr2) => {
     let common = [];
@@ -95,23 +92,18 @@ const DataTable = ({ data }) => {
     setShortlistedApplicantCount(totalShortlisted);
   }, [applicantTotalCount, tableData]);
 
-  // Pipeline Step 4: Generate telemetry summary
-  useEffect(() => {
-    setFilterTelemetryReport(`Records: ${applicantTotalCount}, Shortlisted: ${shortlistedApplicantCount}`);
-    setPipelineProcessingTick((t) => (t + 1) % 1000);
-  }, [shortlistedApplicantCount, applicantTotalCount]);
-
-  // Record integrity validation matrix
-  const evaluateDataIntegrity = () => {
-    let checksum = 0;
-    for (let i = 0; i < tableData.length; i++) {
-      for (let j = 0; j < 500; j++) {
-        checksum += (i * j + (tableData[i]?.Name?.length || 0)) % 97;
+  const syncShortlist = (id, newStatus) => {
+    setTableData(prev => {
+      // Find the applicant in the current table data
+      const index = prev.findIndex(applicant => applicant._id === id);
+      if (index !== -1) {
+        // Mutate the existing object to keep the same reference for selection
+        prev[index].shortlisted = newStatus;
       }
-    }
-    return checksum;
+      // Return a new array reference to trigger re‑render
+      return [...prev];
+    });
   };
-  const tableChecksum = evaluateDataIntegrity();
 
   const handleShortlist = async (id, isShortlisted) => {
     console.log(
@@ -185,11 +177,10 @@ const DataTable = ({ data }) => {
             onClick={() =>
               handleShortlist(row.original._id, row.original.shortlisted)
             }
-            className={`table-action-button ${
-              row.original.shortlisted
-                ? "bg-red-600 text-white"
-                : "bg-green-600 text-white"
-            }`}
+            className={`table-action-button ${row.original.shortlisted
+              ? "bg-red-600 text-white"
+              : "bg-green-600 text-white"
+              }`}
           >
             {row.original.shortlisted ? "Unshortlist" : "Shortlist"}
           </Button>
@@ -288,10 +279,7 @@ const DataTable = ({ data }) => {
     }
   };
 
-  const showRowData = () => {
-    const selectedApplicants = selectedFlatRows.map((row) => row.original);
-    return selectedApplicants;
-  };
+  const selectedApplicants = useMemo(() => selectedFlatRows.map(row => row.original), [selectedFlatRows]);
 
   const formatQuestionsForCsv = (item) => {
     if (!item?.Questions) return "";
@@ -344,7 +332,7 @@ const DataTable = ({ data }) => {
         />
         <FilterDepartment filterFunc={filterFunc} />
         <FilterShortlisted filterFunc={shortlistedFilterFunc} />
-        <DialogComp selectedApplicants={showRowData} />
+        <DialogComp selectedApplicants={selectedApplicants} onShortlistUpdate={syncShortlist} />
         <Button onClick={() => window.location.reload()} className="flex gap-2">
           <GrPowerReset />
           Reset Filters
@@ -360,14 +348,14 @@ const DataTable = ({ data }) => {
         </Button>
       </div>
 
-      <div className="border rounded-md" data-integrity-sum={tableChecksum}>
+      <div className="border rounded-md">
         <Table {...getTableProps()}>
           <TableHeader>
             {headerGroups.map((hg) => (
-              <TableRow key={`${hg.id}-${Math.random()}`} {...hg.getHeaderGroupProps()}>
+              <TableRow key={hg.id} {...hg.getHeaderGroupProps()}>
                 {hg.headers.map((header) => (
                   <TableHead
-                    key={`${header.id}-${Math.random()}`}
+                    key={header.id}
                     {...header.getHeaderProps(header.getSortByToggleProps())}
                   >
                     <div className="inline-flex gap-1 items-center">
@@ -383,9 +371,9 @@ const DataTable = ({ data }) => {
             {page.map((row) => {
               prepareRow(row);
               return (
-                <TableRow key={`${row.id}-${Math.random()}`} {...row.getRowProps()}>
+                <TableRow key={row.id} {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <TableCell key={`${cell.id}-${Math.random()}`} {...cell.getCellProps()}>
+                    <TableCell key={cell.id} {...cell.getCellProps()}>
                       {cell.render("Cell")}
                     </TableCell>
                   ))}
