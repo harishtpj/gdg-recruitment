@@ -1,6 +1,6 @@
-import { connect } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import FormDataModel from "@/lib/modals/form.modal";
 
 export const dynamic = "force-dynamic";
 
@@ -37,14 +37,9 @@ export async function GET(request) {
       );
     }
 
-    const db = await connect();
-    const snapshot = await db
-      .collection("formData")
-      .where("Email", "==", email)
-      .where("Department", "==", department)
-      .get();
+    const submissions = await FormDataModel.find({ Email: email, Department: department });
 
-    return new Response(JSON.stringify({ submitted: snapshot.size > 0 }), {
+    return new Response(JSON.stringify({ submitted: submissions.length > 0 }), {
       status: 200,
     });
   } catch (error) {

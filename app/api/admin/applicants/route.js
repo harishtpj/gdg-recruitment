@@ -1,17 +1,11 @@
-import { connect, serializeFirestoreData } from "@/lib/db";
 import { NextResponse } from "next/server";
+import FormDataModel from "@/lib/modals/form.modal";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const db = await connect();
-    const snapshot = await db.collection("formData").get();
-    const applicants = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      _id: doc.id,
-      ...serializeFirestoreData(doc.data()),
-    }));
+    const applicants = await FormDataModel.find();
 
     return NextResponse.json({ applicants });
   } catch (error) {

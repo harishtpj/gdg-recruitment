@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { connect, serializeFirestoreData } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import FormDataModel from "@/lib/modals/form.modal";
 
 export const dynamic = "force-dynamic";
 
@@ -37,13 +37,7 @@ export async function GET(req) {
       );
     }
 
-    const db = await connect();
-    const snapshot = await db.collection("formData").where("Email", "==", email).get();
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      _id: doc.id,
-      ...serializeFirestoreData(doc.data()),
-    }));
+    const data = await FormDataModel.find({ Email: email });
 
     return NextResponse.json({ data }, { status: 200 });
   } catch (error) {

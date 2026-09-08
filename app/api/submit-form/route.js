@@ -1,6 +1,6 @@
-import { connect } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { submitFormAction } from "@/lib/actions/form.action";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,6 @@ export async function POST(req) {
       );
                   
 
-    const db = await connect();
     const data = await req.json();
 
     const {
@@ -57,41 +56,20 @@ export async function POST(req) {
       );
     }
 
-    const collection = db.collection("formData");
-
-    const existingSubmissions = await collection.where("Email", "==", userEmail).get();
-
-    const alreadySubmittedDept = existingSubmissions.docs.some(
-      (doc) => doc.data()?.Department === Department
-    );
-
-    if (alreadySubmittedDept) {
-      return new Response(
-        JSON.stringify({
-          message: `You have already submitted an application for ${Department}`,
-        }),
-        { status: 400 }
-      );
-    }
-
-    if (existingSubmissions.size >= 2) {
-      return new Response(
-        JSON.stringify({
-          message: "Remember that you can only submit upto 2 unique applications",
-        }),
-        { status: 400 }
-      );
-    }
-
-    await collection.add({
+    const result = await submitFormAction({
       ...formFields,
       Gender,
       "Why do you want to join the department?": motivation,
       Department,
       Questions,
       Email: userEmail,
-      createdAt: new Date(),
     });
+
+    if (!result.success) {
+      return new Response(JSON.stringify({ message: result.message }), {
+        status: result.status || 500,
+      });
+    }
 
     return new Response(
       JSON.stringify({

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { connect } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import FormDataModel from "@/lib/modals/form.modal";
 
 export const dynamic = "force-dynamic";
 
@@ -37,15 +37,10 @@ export async function GET(req) {
       );
     }
 
-    const db = await connect();
-    const snapshot = await db
-      .collection("formData")
-      .where("Email", "==", email)
-      .select("Department")
-      .get();
-    const submittedDepartments = snapshot.docs.map((doc) => doc.data().Department).filter(Boolean);
+    const submissions = await FormDataModel.find({ Email: email });
+    const submittedDepartments = submissions.map((submission) => submission.Department).filter(Boolean);
 
-    return NextResponse.json({ count: snapshot.size, submittedDepartments }, { status: 200 });
+    return NextResponse.json({ count: submissions.length, submittedDepartments }, { status: 200 });
   } catch (error) {
     console.error("Error checking applications:", error);
     return NextResponse.json(

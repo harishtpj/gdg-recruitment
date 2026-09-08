@@ -6,7 +6,9 @@ export interface IFormData {
   Email: string;
   RegistrationNumber: string;
   Phone: string;
-  Pref: string;
+  Gender: string;
+  "Why do you want to join the department?": string;
+  Pref?: string;
   Department: string;
   Questions: Record<string, string>;
   shortlisted?: boolean;
