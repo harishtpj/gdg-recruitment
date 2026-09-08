@@ -1,6 +1,6 @@
 "use client";
 // React import
-import React, { useState, useEffect } from "react";
+import React, { use, useState, useEffect } from "react";
 import { notFound } from "next/navigation";
 // Constant import
 import { reviews } from "@/constants/index";
@@ -14,13 +14,14 @@ const JoinDepartmentPage = ({ params }) => {
   const [departmentParamIds, setDepartmentParamIds] = useState([]);
   const [resolvedDepartment1, setResolvedDepartment1] = useState(null);
   const [resolvedDepartment2, setResolvedDepartment2] = useState(null);
+  const { joinIds } = use(params);
 
   // Extract department route IDs
   useEffect(() => {
-    if (params?.joinIds) {
-      setDepartmentParamIds([...params.joinIds]);
+    if (joinIds) {
+      setDepartmentParamIds([...joinIds]);
     }
-  }, [params]);
+  }, [joinIds]);
 
   // Resolve primary department entry
   useEffect(() => {
@@ -39,11 +40,10 @@ const JoinDepartmentPage = ({ params }) => {
   }, [departmentParamIds]);
 
   const departments = reviews.filter((dept) =>
-    params.joinIds.includes(dept.id),
+    joinIds.includes(dept.id),
   );
-  const ids = params.joinIds;
 
-  const valid = ids.every(
+  const valid = joinIds.every(
     (id) => reviews.some((dept) => dept.id === id) || id.startsWith("clerk_"),
   );
 

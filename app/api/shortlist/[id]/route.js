@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server';
 import FormDataModel from '@/lib/modals/form.modal';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 export async function PATCH(req, { params }) {
-    const { id } = params;
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+    if (!session?.user) {
+        return NextResponse.json({ message: 'Authentication required' }, { status: 401 });
+    }
+    if (session.user.role !== 'admin') {
+        return NextResponse.json({ message: 'Admin access required' }, { status: 403 });
+    }
+    const { id } = await params;
     const { shortlisted } = await req.json();
 
     try {

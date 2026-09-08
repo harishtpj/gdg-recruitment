@@ -211,6 +211,7 @@ const DataTable = ({ data }) => {
     {
       columns,
       data: tableData,
+      autoResetSelectedRows: false, 
     },
     useFilters,
     useGlobalFilter,
@@ -351,32 +352,45 @@ const DataTable = ({ data }) => {
       <div className="border rounded-md">
         <Table {...getTableProps()}>
           <TableHeader>
-            {headerGroups.map((hg) => (
-              <TableRow key={hg.id} {...hg.getHeaderGroupProps()}>
-                {hg.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    {...header.getHeaderProps(header.getSortByToggleProps())}
-                  >
-                    <div className="inline-flex gap-1 items-center">
-                      {header.render("Header")}
-                      <FaSortAmountDownAlt />
-                    </div>
-                  </TableHead>
-                ))}
+            {headerGroups.map((hg, groupIndex) => (
+              <TableRow key={`header-row-${groupIndex}`}>
+                {hg.headers.map((header, headerIndex) => {
+                  const sortProps = header.getSortByToggleProps();
+                  const { key: _key, ...safeSortProps } = sortProps;
+
+                  return (
+                    <TableHead
+                      key={`header-${groupIndex}-${headerIndex}`}
+                      {...safeSortProps}
+                    >
+                      <div className="inline-flex gap-1 items-center">
+                        {header.render("Header")}
+                        <FaSortAmountDownAlt />
+                      </div>
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody {...getTableBodyProps()}>
-            {page.map((row) => {
+            {page.map((row, rowIndex) => {
               prepareRow(row);
+
               return (
-                <TableRow key={row.id} {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <TableCell key={cell.id} {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </TableCell>
-                  ))}
+                <TableRow key={`row-${rowIndex}`}>
+                  {row.cells.map((cell, cellIndex) => {
+                    const { key: _key, ...cellProps } = cell.getCellProps();
+
+                    return (
+                      <TableCell
+                        key={`cell-${rowIndex}-${cellIndex}`}
+                        {...cellProps}
+                      >
+                        {cell.render("Cell")}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               );
             })}

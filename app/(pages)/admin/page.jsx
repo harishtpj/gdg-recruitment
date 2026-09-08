@@ -1,21 +1,30 @@
 import React from "react";
-import { connect, serializeFirestoreData } from "@/lib/db";
 import AdminContent from "@/components/AdminContent";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import FormDataModel from "@/lib/modals/form.modal";
+import { serializeFirestoreData } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const db = await connect();
-  const snapshot = await db.collection("formData").get();
-  const applicants = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    _id: doc.id,
-    ...serializeFirestoreData(doc.data()),
-  }));
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  if (session.user.role !== "admin") {
+    return <main>Unauthorized</main>;
+  }
+
+  const applicants = await FormDataModel.find();
 
   return (
     <main>
-      <AdminContent applicants={applicants} />
+      <AdminContent applicants={serializeFirestoreData(applicants)} />
     </main>
   );
 }

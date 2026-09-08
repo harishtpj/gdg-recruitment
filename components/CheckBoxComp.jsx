@@ -3,13 +3,13 @@
 import React from "react";
 
 export const CheckBoxComp = React.forwardRef(
-  ({ intermediate, ...rest }, ref) => {
+  ({ indeterminate, ...rest }, ref) => {
     const defaultRef = React.useRef();
     const resolveRef = ref || defaultRef;
 
     React.useEffect(() => {
-      resolveRef.current.intermediate = intermediate;
-    }, [resolveRef, intermediate]);
+      resolveRef.current.indeterminate = Boolean(indeterminate);
+    }, [resolveRef, indeterminate]);
     return (
       <>
         <input type="checkbox" ref={resolveRef} {...rest} />
